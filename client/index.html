@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" ng-app>
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+    
+      body, html {
+        margin : 0;
+        padding : 0;
+      }
+      
+      #bg {
+        width:100%;
+        height:100%;
+      }
+    </style>
+    
+  </head>
+  <body>
+
+    <image id="bg"></image>
+   
+  </body>
+   <script>
+        var socket = io.connect();
+        var bg = document.getElementById("bg");
+        
+        socket.on('init', function (data) {
+          initUI(data);
+        })
+        
+        socket.on('update', function (data) {
+          console.log("new game state ", data);
+          updateUI(data);
+        })
+        
+        addEventListener("click", function (e) {
+          
+          var windowWidth = window.innerWidth;
+          var windowHeight = window.innerHeight;
+          var backgroundWidth = bg.width;
+          var backgroundHeight = bg.height;
+          
+          var x = Math.floor(event.layerX / windowWidth * bg.naturalWidth );
+          var y = Math.floor(event.layerY / windowHeight * bg.naturalHeight);
+          
+          console.log("clicked on ", x, y)
+          socket.emit("click", {x : x, y : y});
+        })
+        
+        
+        var initUI = function (state) {
+          //do first time setup
+          bg.src = state.url
+
+          updateUI();
+        }
+        
+        var updateUI = function (state) {
+          //code that runs every time. 
+        }
+         
+    </script>
+</html>
