@@ -3,62 +3,96 @@
   <head>
     <script src="/socket.io/socket.io.js"></script>
     <style>
-    
       body, html {
         margin : 0;
         padding : 0;
       }
-      
+      /*TODO: Currently scales based on width*/
       #bg {
+        display: block;
+        margin : auto;
         width:100%;
-        height:100%;
       }
     </style>
-    
+    <link rel="stylesheet" type="text/css" href="css/menu.css">
+		<link href='https://fonts.googleapis.com/css?family=EB+Garamond' rel='stylesheet' type='text/css'>
+		<link href="https://fonts.googleapis.com/css?family=Londrina+Shadow" rel="stylesheet" type='text/css'>
   </head>
+  
   <body>
-
-    <image id="bg"></image>
-   
+    <div id="wrapper" class="wrapper">
+      <button id="openButton" position=fixed style="background-color: transparent; 
+  		    	outline: none; border: none; cursor:pointer; font-size: 50px;
+  		    	font-family: 'Londrina Shadow', cursive; position: relative;
+  		    	height: 100%;">Slide
+  		</button>
+  		
+      <image id="bg"></image>
+      
+      <!-- menus here -->
+  		<nav id="menu" class="menu">
+  		  <button id="closeButton" class="closeMenu">Close Menu</button>
+  		  <ul class="menuItems" id="menuItems">
+  		    <!--<li class="menuItem"><a href="#" onclick="doSomething()" class="menuLink">Home</a></li>-->
+  		  </ul>
+  		</nav><!-- /bar -->
+  		
+  		<div id="mask" class="mask"></div><!-- mask -->
+    </div>
   </body>
-   <script>
-        var socket = io.connect();
-        var bg = document.getElementById("bg");
+  
+  <footer>
+  <script src="js/menu.js"></script>
+		<script type="text/javascript">
+			var slideMenu = new Menu();
+			var slideBtn = document.querySelector('#openButton');
+			
+			slideBtn.addEventListener('click', function(e) {
+			  e.preventDefault;
+			  slideMenu.open();
+			});
+		</script>
+		
+    <!--SERVER-->
+    <script>
+      var socket = io.connect();
+      var bg = document.getElementById("bg");
+      
+      socket.on('init', function (data) {
+        initUI(data);
+      })
+      
+      socket.on('update', function (data) {
+        console.log("new game state ", data);
+        updateUI(data);
+      })
+      
+      addEventListener("click", function (e) {
+       
+        var origin = bg.getBoundingClientRect(); /* {left, top, width, height}*/
         
-        socket.on('init', function (data) {
-          initUI(data);
-        })
+        var ratioX = (event.pageX - origin.left) / origin.width;
+        var ratioY = (event.pageY - origin.top) / origin.height
         
-        socket.on('update', function (data) {
-          console.log("new game state ", data);
-          updateUI(data);
-        })
+        var x = Math.floor(ratioX * bg.naturalWidth );
+        var y = Math.floor(ratioY * bg.naturalHeight);
         
-        addEventListener("click", function (e) {
-          
-          var windowWidth = window.innerWidth;
-          var windowHeight = window.innerHeight;
-          var backgroundWidth = bg.width;
-          var backgroundHeight = bg.height;
-          
-          var x = Math.floor(event.layerX / windowWidth * bg.naturalWidth );
-          var y = Math.floor(event.layerY / windowHeight * bg.naturalHeight);
-          
-          console.log("clicked on ", x, y)
-          socket.emit("click", {x : x, y : y});
-        })
-        
-        
-        var initUI = function (state) {
-          //do first time setup
-          bg.src = state.url
-
-          updateUI();
-        }
-        
-        var updateUI = function (state) {
-          //code that runs every time. 
-        }
+        console.log("clicked on ", x, y)
+        //socket.emit("click", {x : x, y : y});
+      })
+      
+      
+      var initUI = function (state) {
+        //do first time setup
+        bg.src = state.url
+  
+        updateUI();
+      }
+      
+      var updateUI = function (state) {
+        //code that runs every time. 
+      }
          
     </script>
+	</footer>
 </html>

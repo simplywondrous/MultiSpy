@@ -45,6 +45,9 @@ EyeSpy.prototype.getPixel = function (x, y) {
 
 EyeSpy.prototype.click = function (x_, y_) {
   
+  //If clicking outside image
+  if ( x_ < 0 || y_ < 0 ) return;
+  
   var x = Math.floor(x_);
   var y = Math.floor(y_);
   
